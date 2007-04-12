@@ -1,0 +1,185 @@
+# THIS PACKAGE IS HOSTED AT MANDRIVA SVN
+# PLEASE DO NOT UPLOAD DIRECTLY BEFORE COMMIT
+
+%define	name		nas
+%define	version		1.8a
+%define	rel		3
+%define release		%mkrel %{rel}
+%define	lib_name_orig	lib%{name}
+%define	lib_major	2
+%define	lib_name	%mklibname %{name} %{lib_major}
+%define	lib_name_devel	%mklibname %{name} %{lib_major} -d
+%define	lib_name_static_devel	%mklibname %{name} %{lib_major} -s -d
+
+Summary:	Network Audio System
+Name:		%{name}
+Version:	%{version}
+Release:	%{release}
+License:	Public Domain
+Group:		System/Servers
+Source0:	http://nas.codebrilliance.com/nas/%{name}-%{version}.src.tar.gz
+Source1:	nasd.init
+Source2:	nasd.sysconfig
+Patch0:		nas-1.8a-fix-dos-vulnerability.patch
+URL:		http://radscan.com/nas.html
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
+BuildRequires:	bison flex
+%if %mdkversion > 200600
+BuildRequires:	x11-util-cf-files imake X11-devel rman gccmakedep
+%else
+BuildRequires:	XFree86-devel
+%endif
+Requires(post):	rpm-helper
+Requires(preun):	rpm-helper
+Provides:	nasd
+
+%description
+This package contains a network-transparent, client/server audio
+system, with a library Key features of the Network Audio System
+include:
+ - Device-independent audio over the network
+ - Lots of audio file and data formats
+ - Can store sounds in server for rapid replay
+ - Extensive mixing, separating, and manipulation of audio data
+ - Simultaneous use of audio devices by multiple applications
+ - Use by a growing number of ISVs
+ - Small size
+ - Free! No obnoxious licensing terms
+
+%description -l	no
+Denne pakken inneholder ett netttverkstransparent, klient/server audio
+system, med et bibliotek. Nøkkelfinessene til Network Audio Systemm
+inkluderer:
+ - Enhetsuavhengig lyd over nettverket
+ - Masser av audiofiler og dataformater
+ - Kan lagre lyder i tjener for kjapp gjenavspilling
+ - Utvidet mixing, separering og manipulering av lyddata
+ - Samtidig bruk av lydenheter fra flere applikasjoner på en gang
+ - Brukt av ett voksende nummer av uavhengige programvareutviklere
+ - Liten i størrelse
+ - Gratis! Ingen irriterende lisensbetingelser
+
+%package -n	%{lib_name}
+Summary:	Libraries needed for nasd
+Group:		System/Libraries
+
+%description -n	%{lib_name}
+Libraries needed for nasd and other programs linked against nasd.
+
+%package -n	%{lib_name_devel}
+Summary:	Development headers and libraries for writing programs using NAS
+Group:          Development/C
+Requires:       %{lib_name} = %{version}
+Provides:       %{lib_name_orig}-devel = %{version}-%{release}
+Provides:       %{name}-devel = %{version}-%{release}
+Obsoletes:      %{name}-devel
+
+%description -n	%{lib_name_devel}
+This package allows you to develop your own network audio programs.
+
+%package -n	%{lib_name_static_devel}
+Summary:	NAS static library
+Group:		Development/C
+Requires:       %{lib_name}-devel = %{version}
+Provides:       %{lib_name_orig}-static-devel = %{version}-%{release}
+Provides:       %{name}-static-devel = %{version}-%{release}
+Obsoletes:	%{name}-static
+Provides:	%{name}-static
+Obsoletes:	%{lib_name}-static
+Provides:	%{lib_name}-static
+
+%description -n %{lib_name_static_devel}
+NAS static library.
+
+%prep
+%setup -q
+%patch0 -p0 -b .dos
+
+%build
+for cfgdir in %{_libdir} %{_prefix}/lib %{_prefix}/X11R6/lib %{_datadir}; do
+  if [[ -f "$cfgdir/X11/config/Imake.tmpl" ]]; then
+    CONFIGDIR="$cfgdir/X11/config"
+    break
+  fi
+done
+if [[ -z "$CONFIGDIR" ]]; then
+  echo "Error: Imake.tmpl not found, the package won't build."
+  exit 1
+fi
+make Makefiles CONFIGDIR=$CONFIGDIR
+%make World CONFIGDIR=$CONFIGDIR \
+    WORLDOPTS="-k CDEBUGFLAGS='$RPM_OPT_FLAGS -D__USE_BSD_SIGNAL' " \
+    CXXDEBUGFLAGS="$RPM_OPT_FLAGS -w" 
+
+%install
+rm -rf %{buildroot}
+%makeinstall_std \
+   BINDIR="%{_bindir}" \
+   LIBDIR="%{_libdir}/X11" \
+   INCROOT="%{_includedir}" \
+   USRLIBDIR="%{_libdir}" \
+   SHLIBDIR="%{_libdir}" \
+   MANPATH="%{_mandir}" \
+   DOCDIR="%{_datadir}/X11/doc" \
+   install.man
+
+mv %{buildroot}%{_sysconfdir}/nas/nasd.conf{.eg,}
+install -d %{buildroot}%{_localstatedir}/nasd
+install -m755 %{SOURCE1} -D $RPM_BUILD_ROOT%{_initrddir}/nasd
+install -m755 %{SOURCE2} -D $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/nasd
+
+%clean
+rm -rf %{buildroot}
+
+#Run under own user(not for now)
+#%pre
+#%_pre_useradd nasd %{_localstatedir}/nasd /bin/bash
+
+%post
+%_post_service nasd
+
+%post -n %{lib_name} -p /sbin/ldconfig
+
+%preun
+%_preun_service nasd
+
+%postun -n %{lib_name}
+/sbin/ldconfig
+
+#Run under own user(not for now)
+#%postun
+#%_postun_userdel nasd
+
+%files
+%defattr(644,root,root,755)
+%doc BUGS FAQ HISTORY README RELEASE TODO
+%dir %{_sysconfdir}/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}/nasd.conf
+%config(noreplace) %{_sysconfdir}/sysconfig/nasd
+%{_mandir}/man[15]/*
+#Run under own user(not for now)
+#dir %attr(-,nasd,nasd) %{_localstatedir}/nasd
+%defattr(755,root,root,755)
+%{_bindir}/*
+%{_initrddir}/nasd
+
+%files -n %{lib_name}
+%defattr(755,root,root,755)
+%{_libdir}/lib*.so.*
+%defattr(644,root,root,755)
+%{_libdir}/X11/AuErrorDB
+
+%files -n %{lib_name_devel}
+%defattr(755,root,root,755)
+%{_libdir}/lib*.so
+%defattr(644,root,root,755)
+#{_datadir}/X11/doc/*
+%{_includedir}/audio
+%{_mandir}/man3/*
+
+%files -n %{lib_name_static_devel}
+%defattr(644,root,root,755)
+%{_libdir}/lib*.a
+
+
+
