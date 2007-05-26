@@ -1,9 +1,6 @@
-# THIS PACKAGE IS HOSTED AT MANDRIVA SVN
-# PLEASE DO NOT UPLOAD DIRECTLY BEFORE COMMIT
-
 %define	name		nas
-%define	version		1.8a
-%define	rel		3
+%define	version		1.9
+%define	rel		1
 %define release		%mkrel %{rel}
 %define	lib_name_orig	lib%{name}
 %define	lib_major	2
@@ -20,15 +17,10 @@ Group:		System/Servers
 Source0:	http://nas.codebrilliance.com/nas/%{name}-%{version}.src.tar.gz
 Source1:	nasd.init
 Source2:	nasd.sysconfig
-Patch0:		nas-1.8a-fix-dos-vulnerability.patch
 URL:		http://radscan.com/nas.html
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildRequires:	bison flex
-%if %mdkversion > 200600
 BuildRequires:	x11-util-cf-files imake X11-devel rman gccmakedep
-%else
-BuildRequires:	XFree86-devel
-%endif
 Requires(post):	rpm-helper
 Requires(preun):	rpm-helper
 Provides:	nasd
@@ -93,10 +85,9 @@ NAS static library.
 
 %prep
 %setup -q
-%patch0 -p0 -b .dos
 
 %build
-for cfgdir in %{_libdir} %{_prefix}/lib %{_prefix}/X11R6/lib %{_datadir}; do
+for cfgdir in %{_libdir} %{_prefix}/lib %{_datadir}; do
   if [[ -f "$cfgdir/X11/config/Imake.tmpl" ]]; then
     CONFIGDIR="$cfgdir/X11/config"
     break
@@ -108,8 +99,8 @@ if [[ -z "$CONFIGDIR" ]]; then
 fi
 make Makefiles CONFIGDIR=$CONFIGDIR
 %make World CONFIGDIR=$CONFIGDIR \
-    WORLDOPTS="-k CDEBUGFLAGS='$RPM_OPT_FLAGS -D__USE_BSD_SIGNAL' " \
-    CXXDEBUGFLAGS="$RPM_OPT_FLAGS -w" 
+    WORLDOPTS="-k CDEBUGFLAGS='%{optflags} -D__USE_BSD_SIGNAL' " \
+    CXXDEBUGFLAGS="%{optflags} -w" 
 
 %install
 rm -rf %{buildroot}
@@ -131,24 +122,28 @@ install -m755 %{SOURCE2} -D $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/nasd
 %clean
 rm -rf %{buildroot}
 
-#Run under own user(not for now)
-#%pre
-#%_pre_useradd nasd %{_localstatedir}/nasd /bin/bash
+%pre
+%_pre_useradd nasd %{_localstatedir}/nasd /bin/true
+usermod -G audio nasd
 
 %post
 %_post_service nasd
+
+%triggerpostun -- nas <= 1.9-1
+#(peroyvind): be sure to remove old socket belonging to root and restart nasd
+#             now that it runs under own user
+rm -f /tmp/.sockets/audio*
+service nasd restart
 
 %post -n %{lib_name} -p /sbin/ldconfig
 
 %preun
 %_preun_service nasd
 
-%postun -n %{lib_name}
-/sbin/ldconfig
+%postun -n %{lib_name} -p /sbin/ldconfig
 
-#Run under own user(not for now)
-#%postun
-#%_postun_userdel nasd
+%postun
+%_postun_userdel nasd
 
 %files
 %defattr(644,root,root,755)
@@ -157,8 +152,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/%{name}/nasd.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/nasd
 %{_mandir}/man[15]/*
-#Run under own user(not for now)
-#dir %attr(-,nasd,nasd) %{_localstatedir}/nasd
+%dir %attr(-,nasd,nasd) %{_localstatedir}/nasd
 %defattr(755,root,root,755)
 %{_bindir}/*
 %{_initrddir}/nasd
@@ -180,6 +174,3 @@ rm -rf %{buildroot}
 %files -n %{lib_name_static_devel}
 %defattr(644,root,root,755)
 %{_libdir}/lib*.a
-
-
-
