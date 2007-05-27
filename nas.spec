@@ -1,6 +1,6 @@
 %define	name		nas
 %define	version		1.9
-%define	rel		1
+%define	rel		2
 %define release		%mkrel %{rel}
 %define	lib_name_orig	lib%{name}
 %define	lib_major	2
@@ -133,7 +133,7 @@ usermod -G audio nasd
 #(peroyvind): be sure to remove old socket belonging to root and restart nasd
 #             now that it runs under own user
 rm -f /tmp/.sockets/audio*
-service nasd restart
+service nasd condrestart
 
 %post -n %{lib_name} -p /sbin/ldconfig
 
