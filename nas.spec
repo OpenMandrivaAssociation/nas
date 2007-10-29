@@ -1,6 +1,6 @@
 %define	name		nas
-%define	version		1.9
-%define	rel		2
+%define	version		1.9a
+%define	rel		1
 %define release		%mkrel %{rel}
 %define	lib_name_orig	lib%{name}
 %define	lib_major	2
@@ -147,7 +147,7 @@ service nasd condrestart
 
 %files
 %defattr(644,root,root,755)
-%doc BUGS FAQ HISTORY README RELEASE TODO
+%doc FAQ HISTORY README RELEASE TODO
 %dir %{_sysconfdir}/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}/nasd.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/nasd
