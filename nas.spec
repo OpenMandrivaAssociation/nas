@@ -18,7 +18,6 @@ Source0:	http://nas.codebrilliance.com/nas/%{name}-%{version}.src.tar.gz
 Source1:	nasd.init
 Source2:	nasd.sysconfig
 URL:		http://radscan.com/nas.html
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildRequires:	bison flex
 BuildRequires:	x11-util-cf-files imake X11-devel rman gccmakedep
 Requires(post):	rpm-helper
