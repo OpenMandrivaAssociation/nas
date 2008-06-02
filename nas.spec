@@ -115,7 +115,7 @@ rm -rf %{buildroot}
    install.man
 
 mv %{buildroot}%{_sysconfdir}/nas/nasd.conf{.eg,}
-install -d %{buildroot}%{_localstatedir}/nasd
+install -d %{buildroot}%{_localstatedir}/lib/nasd
 install -m755 %{SOURCE1} -D $RPM_BUILD_ROOT%{_initrddir}/nasd
 install -m755 %{SOURCE2} -D $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/nasd
 
@@ -123,7 +123,7 @@ install -m755 %{SOURCE2} -D $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/nasd
 rm -rf %{buildroot}
 
 %pre
-%_pre_useradd nasd %{_localstatedir}/nasd /bin/true
+%_pre_useradd nasd %{_localstatedir}/lib/nasd /bin/true
 usermod -G audio nasd
 
 %post
@@ -152,7 +152,7 @@ service nasd condrestart
 %config(noreplace) %{_sysconfdir}/%{name}/nasd.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/nasd
 %{_mandir}/man[15]/*
-%dir %attr(-,nasd,nasd) %{_localstatedir}/nasd
+%dir %attr(-,nasd,nasd) %{_localstatedir}/lib/nasd
 %defattr(755,root,root,755)
 %{_bindir}/*
 %{_initrddir}/nasd
