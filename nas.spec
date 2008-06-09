@@ -135,12 +135,16 @@ usermod -G audio nasd
 rm -f /tmp/.sockets/audio*
 service nasd condrestart
 
+%if %mdkversion < 200900
 %post -n %{lib_name} -p /sbin/ldconfig
+%endif
 
 %preun
 %_preun_service nasd
 
+%if %mdkversion < 200900
 %postun -n %{lib_name} -p /sbin/ldconfig
+%endif
 
 %postun
 %_postun_userdel nasd
