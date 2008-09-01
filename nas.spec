@@ -1,12 +1,12 @@
 %define	name		nas
-%define	version		1.9a
+%define	version		1.9.1
 %define	rel		1
 %define release		%mkrel %{rel}
 %define	lib_name_orig	lib%{name}
 %define	lib_major	2
 %define	lib_name	%mklibname %{name} %{lib_major}
-%define	lib_name_devel	%mklibname %{name} %{lib_major} -d
-%define	lib_name_static_devel	%mklibname %{name} %{lib_major} -s -d
+%define	lib_name_devel	%mklibname %{name} -d
+%define	lib_name_static_devel	%mklibname %{name} -s -d
 
 Summary:	Network Audio System
 Name:		%{name}
@@ -64,7 +64,7 @@ Group:          Development/C
 Requires:       %{lib_name} = %{version}
 Provides:       %{lib_name_orig}-devel = %{version}-%{release}
 Provides:       %{name}-devel = %{version}-%{release}
-Obsoletes:      %{name}-devel
+Obsoletes:      %{lib_name}-devel
 
 %description -n	%{lib_name_devel}
 This package allows you to develop your own network audio programs.
@@ -75,10 +75,9 @@ Group:		Development/C
 Requires:       %{lib_name}-devel = %{version}
 Provides:       %{lib_name_orig}-static-devel = %{version}-%{release}
 Provides:       %{name}-static-devel = %{version}-%{release}
-Obsoletes:	%{name}-static
 Provides:	%{name}-static
-Obsoletes:	%{lib_name}-static
-Provides:	%{lib_name}-static
+Obsoletes:	%{lib_name}-static-devel
+
 
 %description -n %{lib_name_static_devel}
 NAS static library.
@@ -163,7 +162,7 @@ service nasd condrestart
 
 %files -n %{lib_name}
 %defattr(755,root,root,755)
-%{_libdir}/lib*.so.*
+%{_libdir}/lib*.so.%{lib_major}*
 %defattr(644,root,root,755)
 %{_libdir}/X11/AuErrorDB
 
