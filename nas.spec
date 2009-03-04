@@ -1,6 +1,6 @@
-%define	name		nas
-%define	version		1.9.1
-%define	rel		1
+%define	name	nas
+%define	version 1.9.1
+%define	rel		2
 %define release		%mkrel %{rel}
 %define	lib_name_orig	lib%{name}
 %define	lib_major	2
@@ -14,16 +14,21 @@ Version:	%{version}
 Release:	%{release}
 License:	Public Domain
 Group:		System/Servers
+URL:		http://radscan.com/nas.html
 Source0:	http://nas.codebrilliance.com/nas/%{name}-%{version}.src.tar.gz
 Source1:	nasd.init
 Source2:	nasd.sysconfig
-URL:		http://radscan.com/nas.html
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
-BuildRequires:	bison flex
-BuildRequires:	x11-util-cf-files imake X11-devel rman gccmakedep
+BuildRequires:	bison
+BuildRequires:	flex
+BuildRequires:	x11-util-cf-files
+BuildRequires:	imake
+BuildRequires:	X11-devel
+BuildRequires:	rman
+BuildRequires:	gccmakedep
 Requires(post):	rpm-helper
 Requires(preun):	rpm-helper
 Provides:	nasd
+BuildRoot:	%{_tmppath}/%{name}-%{version}
 
 %description
 This package contains a network-transparent, client/server audio
@@ -60,11 +65,11 @@ Libraries needed for nasd and other programs linked against nasd.
 
 %package -n	%{lib_name_devel}
 Summary:	Development headers and libraries for writing programs using NAS
-Group:          Development/C
-Requires:       %{lib_name} = %{version}
-Provides:       %{lib_name_orig}-devel = %{version}-%{release}
-Provides:       %{name}-devel = %{version}-%{release}
-Obsoletes:      %{lib_name}-devel
+Group:      Development/C
+Requires:   %{lib_name} = %{version}
+Provides:   %{lib_name_orig}-devel = %{version}-%{release}
+Provides:   %{name}-devel = %{version}-%{release}
+Obsoletes:  %{lib_name}-devel
 
 %description -n	%{lib_name_devel}
 This package allows you to develop your own network audio programs.
@@ -72,12 +77,11 @@ This package allows you to develop your own network audio programs.
 %package -n	%{lib_name_static_devel}
 Summary:	NAS static library
 Group:		Development/C
-Requires:       %{lib_name}-devel = %{version}
-Provides:       %{lib_name_orig}-static-devel = %{version}-%{release}
-Provides:       %{name}-static-devel = %{version}-%{release}
+Requires:   %{lib_name_devel} = %{version}
+Provides:   %{lib_name_orig}-static-devel = %{version}-%{release}
+Provides:   %{name}-static-devel = %{version}-%{release}
 Provides:	%{name}-static
 Obsoletes:	%{lib_name}-static-devel
-
 
 %description -n %{lib_name_static_devel}
 NAS static library.
