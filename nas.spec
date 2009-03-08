@@ -18,6 +18,7 @@ URL:		http://radscan.com/nas.html
 Source0:	http://nas.codebrilliance.com/nas/%{name}-%{version}.src.tar.gz
 Source1:	nasd.init
 Source2:	nasd.sysconfig
+Patch0:		nas-1.9.2-fix-str-fmt.patch
 BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	x11-util-cf-files
@@ -88,6 +89,7 @@ NAS static library.
 
 %prep
 %setup -q
+%patch0 -p0
 
 %build
 for cfgdir in %{_libdir} %{_prefix}/lib %{_datadir}; do
