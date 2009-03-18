@@ -26,6 +26,7 @@ BuildRequires:	imake
 BuildRequires:	X11-devel
 BuildRequires:	rman
 BuildRequires:	gccmakedep
+BuildRequires:	libxp-devel
 Requires(post):	rpm-helper
 Requires(preun):	rpm-helper
 Provides:	nasd
@@ -121,8 +122,8 @@ rm -rf %{buildroot}
 
 mv %{buildroot}%{_sysconfdir}/nas/nasd.conf{.eg,}
 install -d %{buildroot}%{_localstatedir}/lib/nasd
-install -m755 %{SOURCE1} -D $RPM_BUILD_ROOT%{_initrddir}/nasd
-install -m755 %{SOURCE2} -D $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/nasd
+install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/nasd
+install -m755 %{SOURCE2} -D %{buildroot}%{_sysconfdir}/sysconfig/nasd
 
 %clean
 rm -rf %{buildroot}
