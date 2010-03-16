@@ -1,6 +1,6 @@
 %define	name	nas
 %define	version 1.9.2
-%define	rel		2
+%define	rel		3
 %define release		%mkrel %{rel}
 %define	lib_name_orig	lib%{name}
 %define	lib_major	2
