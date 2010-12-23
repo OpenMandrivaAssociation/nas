@@ -1,6 +1,6 @@
 %define	name	nas
 %define	version 1.9.2
-%define	rel		4
+%define	rel		5
 %define release		%mkrel %{rel}
 %define	lib_name_orig	lib%{name}
 %define	lib_major	2
@@ -19,14 +19,18 @@ Source0:	http://nas.codebrilliance.com/nas/%{name}-%{version}.src.tar.gz
 Source1:	nasd.init
 Source2:	nasd.sysconfig
 Patch0:		nas-1.9.2-fix-str-fmt.patch
+Patch1:		nas-1.9.2-asneeded.patch
 BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	x11-util-cf-files
 BuildRequires:	imake
-BuildRequires:	X11-devel
+BuildRequires:	libx11-devel
+BuildRequires:	libxau-devel
+BuildRequires:	libxp-devel
+Buildrequires:	libxaw-devel
+Buildrequires:	libxt-devel
 BuildRequires:	rman
 BuildRequires:	gccmakedep
-BuildRequires:	libxp-devel
 Requires(post):	rpm-helper
 Requires(preun):	rpm-helper
 Provides:	nasd
@@ -91,6 +95,7 @@ NAS static library.
 %prep
 %setup -q
 %patch0 -p0
+%patch1 -p0
 
 %build
 for cfgdir in %{_libdir} %{_prefix}/lib %{_datadir}; do
@@ -106,7 +111,7 @@ fi
 make Makefiles CONFIGDIR=$CONFIGDIR
 %make World CONFIGDIR=$CONFIGDIR \
     WORLDOPTS="-k CDEBUGFLAGS='%{optflags} -D__USE_BSD_SIGNAL' " \
-    CXXDEBUGFLAGS="%{optflags} -w" 
+    CXXDEBUGFLAGS="%{optflags} -w" EXTRA_LDOPTIONS="%ldflags" CC="gcc %ldflags"
 
 %install
 rm -rf %{buildroot}
