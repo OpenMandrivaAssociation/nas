@@ -189,3 +189,142 @@ service nasd condrestart
 %files -n %{lib_name_static_devel}
 %defattr(644,root,root,755)
 %{_libdir}/lib*.a
+
+
+%changelog
+* Wed May 04 2011 Oden Eriksson <oeriksson@mandriva.com> 1.9.2-6mdv2011.0
++ Revision: 666555
+- mass rebuild
+
+* Thu Dec 23 2010 Funda Wang <fwang@mandriva.org> 1.9.2-5mdv2011.0
++ Revision: 623971
+- tighten BR
+
+* Fri Dec 03 2010 Oden Eriksson <oeriksson@mandriva.com> 1.9.2-4mdv2011.0
++ Revision: 606810
+- rebuild
+
+* Tue Mar 16 2010 Oden Eriksson <oeriksson@mandriva.com> 1.9.2-3mdv2010.1
++ Revision: 521151
+- rebuilt for 2010.1
+
+* Thu Sep 03 2009 Christophe Fergeau <cfergeau@mandriva.com> 1.9.2-2mdv2010.0
++ Revision: 426204
+- rebuild
+
+* Wed Mar 18 2009 Emmanuel Andry <eandry@mandriva.org> 1.9.2-1mdv2009.1
++ Revision: 357344
+- BR libxp-devel
+- diff p0 to fix format not a string literal
+- New version 1.9.2
+
+  + Guillaume Rousse <guillomovitch@mandriva.org>
+    - fix static devel package dependencies
+
+* Tue Sep 02 2008 Emmanuel Andry <eandry@mandriva.org> 1.9.1-1mdv2009.0
++ Revision: 278773
+- New version
+- apply devel policy
+
+* Mon Jun 09 2008 Pixel <pixel@mandriva.com> 1.9a-1mdv2009.0
++ Revision: 217193
+- do not call ldconfig in %%post/%%postun, it is now handled by filetriggers
+- adapt to %%_localstatedir now being /var instead of /var/lib (#22312)
+
+  + Olivier Blin <oblin@mandriva.com>
+    - restore BuildRoot
+
+  + Thierry Vignaud <tv@mandriva.org>
+    - kill re-definition of %%buildroot on Pixel's request
+
+* Mon Oct 29 2007 Per Øyvind Karlsen <peroyvind@mandriva.org> 1.9a-1mdv2008.1
++ Revision: 103298
+- new release: 1.9a
+
+* Sun May 27 2007 Per Øyvind Karlsen <peroyvind@mandriva.org> 1.9-2mdv2008.0
++ Revision: 31731
+- service restart should be conditional
+
+* Sat May 26 2007 Per Øyvind Karlsen <peroyvind@mandriva.org> 1.9-1mdv2008.0
++ Revision: 31520
+- new release: 2.1
+- fix detection of CONFIGDIR
+- update init script with LSB tags
+- run nasd under own user
+
+
+* Sun Mar 18 2007 Per Øyvind Karlsen <pkarlsen@mandriva.com> 1.8a-3mdv2007.1
++ Revision: 146343
+- fix DoS vulnerability (P0)
+
+* Wed Jan 03 2007 Emmanuel Andry <eandry@mandriva.org> 1.8a-2mdv2007.1
++ Revision: 103934
+- rebuild for x86_64 (bug #25304)
+- rebuild
+
+  + Per Øyvind Karlsen <pkarlsen@mandriva.com>
+    - add gccmakedep to buildrequires to fix x86_64 build
+    - 1.8a
+    - fix permissions of docs in devel package
+    - fix executable-marked-as-config-file
+      fix no-prereq-on
+    - updated to 1.8, add full url to source
+
+  + Gwenole Beauchesne <gbeauchesne@mandriva.com>
+    - X11 config files are now in /usr/share/X11/config
+    - workaround xorg packaging bugs
+    - clean specfile, workaround rpm #%% bugs
+
+  + Nicolas Lécureuil <neoclust@mandriva.org>
+    - Fix File list
+
+  + Helio Chissini de Castro <helio@mandriva.com>
+    - Fixed sysinit install
+    - Uncompress source files ( except original tarball )
+    - Add warn that package is hosted at svn
+    - Fixed build requires for new xorg
+    - import nas-1.7b-5mdv2007.0
+
+* Tue May 23 2006 Helio Chissini de Castro <helio@mandriva.com> 1.7b-5mdk
+- Missing rman as a buildrequires
+
+* Tue May 23 2006 Helio Chissini de Castro <helio@mandriva.com> 1.7b-3mdk
+- Recompile against new X.org
+- Move path to match new X layout
+- Move library to proper %%_lib
+
+* Sun Jan 01 2006 Mandriva Linux Team <http://www.mandrivaexpert.com/> 1.7b-2mdk
+- Rebuild
+
+* Fri Jun 10 2005 Per Øyvind Karlsen <pkarlsen@mandriva.com> 1.7b-1mdk
+- 1.7b
+- fix requires
+- %%mkrel
+
+* Sat Apr 16 2005 Per Øyvind Karlsen <peroyvind@linux-mandrake.com> 1.7a-1mdk
+- 1.7a
+
+* Thu Feb 10 2005 Gwenole Beauchesne <gbeauchesne@mandrakesoft.com> 1.7-3mdk
+- fix build
+
+* Thu Dec 02 2004 Götz Waschk <waschk@linux-mandrake.com> 1.7-2mdk
+- update file list
+- fix buildrequires
+
+* Mon Nov 15 2004 Per Øyvind Karlsen <peroyvind@linux-mandrake.com> 1.7-1mdk
+- 1.7
+
+* Mon Nov 08 2004 Per Øyvind Karlsen <peroyvind@linux-mandrake.com> 1.6g-1mdk
+- 1.6g
+
+* Tue Jun 22 2004 Per Øyvind Karlsen <peroyvind@linux-mandrake.com> 1.6d-1mdk
+- 1.6d
+- drop redundant requires
+
+* Sat Jun 05 2004 Per Øyvind Karlsen <peroyvind@linux-mandrake.com> 1.6c-2mdk
+- rebuild
+
+* Fri Apr 02 2004 Per Øyvind Karlsen <peroyvind@linux-mandrake.com> 1.6c-1mdk
+- 1.6c
+- drop P2 (merged upstream)
+
