@@ -1,17 +1,13 @@
-%define	name	nas
-%define	version 1.9.2
-%define	rel		6
-%define release		%mkrel %{rel}
-%define	lib_name_orig	lib%{name}
-%define	lib_major	2
-%define	lib_name	%mklibname %{name} %{lib_major}
-%define	lib_name_devel	%mklibname %{name} -d
-%define	lib_name_static_devel	%mklibname %{name} -s -d
+%define lib_name_orig lib%{name}
+%define lib_major 2
+%define lib_name %mklibname %{name} %{lib_major}
+%define lib_name_devel %mklibname %{name} -d
+%define lib_name_static_devel %mklibname %{name} -s -d
 
 Summary:	Network Audio System
-Name:		%{name}
-Version:	%{version}
-Release:	%{release}
+Name:		nas
+Version:	1.9.2
+Release:	7
 License:	Public Domain
 Group:		System/Servers
 URL:		http://radscan.com/nas.html
@@ -24,17 +20,16 @@ BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	x11-util-cf-files
 BuildRequires:	imake
-BuildRequires:	libx11-devel
-BuildRequires:	libxau-devel
-BuildRequires:	libxp-devel
-Buildrequires:	libxaw-devel
-Buildrequires:	libxt-devel
+BuildRequires:	pkgconfig(x11)
+BuildRequires:	pkgconfig(xau)
+BuildRequires:	pkgconfig(xp)
+BuildRequires:	libxaw-devel
+BuildRequires:	pkgconfig(xt)
 BuildRequires:	rman
 BuildRequires:	gccmakedep
 Requires(post):	rpm-helper
 Requires(preun):	rpm-helper
 Provides:	nasd
-BuildRoot:	%{_tmppath}/%{name}-%{version}
 
 %description
 This package contains a network-transparent, client/server audio
@@ -71,11 +66,11 @@ Libraries needed for nasd and other programs linked against nasd.
 
 %package -n	%{lib_name_devel}
 Summary:	Development headers and libraries for writing programs using NAS
-Group:      Development/C
-Requires:   %{lib_name} = %{version}
-Provides:   %{lib_name_orig}-devel = %{version}-%{release}
-Provides:   %{name}-devel = %{version}-%{release}
-Obsoletes:  %{lib_name}-devel
+Group:		Development/C
+Requires:	%{lib_name} = %{version}
+Provides:	%{lib_name_orig}-devel = %{version}-%{release}
+Provides:	%{name}-devel = %{version}-%{release}
+Obsoletes:	%{lib_name}-devel
 
 %description -n	%{lib_name_devel}
 This package allows you to develop your own network audio programs.
@@ -83,9 +78,9 @@ This package allows you to develop your own network audio programs.
 %package -n	%{lib_name_static_devel}
 Summary:	NAS static library
 Group:		Development/C
-Requires:   %{lib_name_devel} = %{version}
-Provides:   %{lib_name_orig}-static-devel = %{version}-%{release}
-Provides:   %{name}-static-devel = %{version}-%{release}
+Requires:	%{lib_name_devel} = %{version}
+Provides:	%{lib_name_orig}-static-devel = %{version}-%{release}
+Provides:	%{name}-static-devel = %{version}-%{release}
 Provides:	%{name}-static
 Obsoletes:	%{lib_name}-static-devel
 
@@ -114,7 +109,6 @@ make Makefiles CONFIGDIR=$CONFIGDIR
     CXXDEBUGFLAGS="%{optflags} -w" EXTRA_LDOPTIONS="%ldflags" CC="gcc %ldflags"
 
 %install
-rm -rf %{buildroot}
 %makeinstall_std \
    BINDIR="%{_bindir}" \
    LIBDIR="%{_libdir}/X11" \
@@ -129,9 +123,6 @@ mv %{buildroot}%{_sysconfdir}/nas/nasd.conf{.eg,}
 install -d %{buildroot}%{_localstatedir}/lib/nasd
 install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/nasd
 install -m755 %{SOURCE2} -D %{buildroot}%{_sysconfdir}/sysconfig/nasd
-
-%clean
-rm -rf %{buildroot}
 
 %pre
 %_pre_useradd nasd %{_localstatedir}/lib/nasd /bin/true
