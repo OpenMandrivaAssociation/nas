@@ -7,7 +7,7 @@
 Summary:	Network Audio System
 Name:		nas
 Version:	1.9.2
-Release:	7
+Release:	8
 License:	Public Domain
 Group:		System/Servers
 URL:		http://radscan.com/nas.html
@@ -22,7 +22,6 @@ BuildRequires:	x11-util-cf-files
 BuildRequires:	imake
 BuildRequires:	pkgconfig(x11)
 BuildRequires:	pkgconfig(xau)
-BuildRequires:	pkgconfig(xp)
 BuildRequires:	libxaw-devel
 BuildRequires:	pkgconfig(xt)
 BuildRequires:	rman
