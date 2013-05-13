@@ -22,7 +22,7 @@ BuildRequires:	x11-util-cf-files
 BuildRequires:	imake
 BuildRequires:	pkgconfig(x11)
 BuildRequires:	pkgconfig(xau)
-BuildRequires:	libxaw-devel
+BuildRequires:	pkgconfig(xaw7)
 BuildRequires:	pkgconfig(xt)
 BuildRequires:	rman
 BuildRequires:	gccmakedep
