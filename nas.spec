@@ -18,6 +18,7 @@ BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	gccmakedep
 BuildRequires:	imake
+BuildRequires:	makedepend
 BuildRequires:	rman
 BuildRequires:	x11-util-cf-files
 BuildRequires:	pkgconfig(x11)
