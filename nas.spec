@@ -5,15 +5,14 @@
 
 Summary:	Network Audio System
 Name:		nas
-Version:	1.9.2
-Release:	15
+Version:	1.9.4
+Release:	1
 License:	Public Domain
 Group:		System/Servers
 URL:		http://radscan.com/nas.html
 Source0:	http://nas.codebrilliance.com/nas/%{name}-%{version}.src.tar.gz
-Source1:	nasd.init
+Source1:	nasd.service
 Source2:	nasd.sysconfig
-Patch0:		nas-1.9.2-fix-str-fmt.patch
 Patch1:		nas-1.9.2-asneeded.patch
 BuildRequires:	bison
 BuildRequires:	flex
@@ -71,7 +70,6 @@ NAS static library.
 
 %prep
 %setup -q
-%patch0 -p0
 %patch1 -p0
 
 %build
@@ -103,8 +101,8 @@ make Makefiles CONFIGDIR=$CONFIGDIR
 
 mv %{buildroot}%{_sysconfdir}/nas/nasd.conf{.eg,}
 install -d %{buildroot}%{_localstatedir}/lib/nasd
-install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/nasd
 install -m755 %{SOURCE2} -D %{buildroot}%{_sysconfdir}/sysconfig/nasd
+install -p -m644 -D %{SOURCE1} %{buildroot}%{_unitdir}/nasd.service
 
 %pre
 %_pre_useradd nasd %{_localstatedir}/lib/nasd /bin/true
@@ -133,7 +131,7 @@ service nasd condrestart
 %{_mandir}/man[15]/*
 %dir %attr(-,nasd,nasd) %{_localstatedir}/lib/nasd
 %{_bindir}/*
-%{_initrddir}/nasd
+%{_unitdir}/nasd.service
 
 %files -n %{libname}
 %{_libdir}/libaudio.so.%{major}*
@@ -146,4 +144,3 @@ service nasd condrestart
 
 %files -n %{statname}
 %{_libdir}/lib*.a
-
