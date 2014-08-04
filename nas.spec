@@ -74,6 +74,7 @@ NAS static library.
 %patch1 -p0
 
 %build
+%before_configure
 for cfgdir in %{_libdir} %{_prefix}/lib %{_datadir}; do
   if [[ -f "$cfgdir/X11/config/Imake.tmpl" ]]; then
     CONFIGDIR="$cfgdir/X11/config"
@@ -87,7 +88,12 @@ fi
 make Makefiles CONFIGDIR=$CONFIGDIR
 %make World CONFIGDIR=$CONFIGDIR \
     WORLDOPTS="-k CDEBUGFLAGS='%{optflags} -D__USE_BSD_SIGNAL' " \
-    CXXDEBUGFLAGS="%{optflags} -w" EXTRA_LDOPTIONS="%ldflags" CC="gcc %ldflags"
+    CXXDEBUGFLAGS="%{optflags} -w" EXTRA_LDOPTIONS="%ldflags" CC="%{__cc} %ldflags"
+
+for i in $(find . -name Makefile);do sed -i 's|gcc|%{__cc}|g' $i;done
+%ifarch aarch64
+for i in $(find . -name Makefile);do sed -i 's|DefaultGcc2AArch64Opt||g' $i;done
+%endif
 
 %install
 %makeinstall_std \
