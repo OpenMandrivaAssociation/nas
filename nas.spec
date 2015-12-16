@@ -2,6 +2,7 @@
 %define libname %mklibname audio %{major}
 %define devname %mklibname audio -d
 %define statname %mklibname audio -s -d
+%define _disable_lto 1
 
 Summary:	Network Audio System
 Name:		nas
