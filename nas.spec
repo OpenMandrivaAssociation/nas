@@ -26,6 +26,7 @@ BuildRequires:	pkgconfig(x11)
 BuildRequires:	pkgconfig(xau)
 BuildRequires:	pkgconfig(xaw7)
 BuildRequires:	pkgconfig(xt)
+BuildRequires:	rpm-helper
 Requires(post,preun):	rpm-helper
 Provides:	nasd
 
