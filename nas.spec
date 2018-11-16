@@ -3,11 +3,12 @@
 %define devname %mklibname audio -d
 %define statname %mklibname audio -s -d
 %define _disable_lto 1
+%global __requires_exclude ^perl\\(getopts.pl\\)
 
 Summary:	Network Audio System
 Name:		nas
 Version:	1.9.4
-Release:	9
+Release:	10
 License:	Public Domain
 Group:		System/Servers
 URL:		http://radscan.com/nas.html
