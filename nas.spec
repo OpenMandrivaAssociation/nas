@@ -1,9 +1,9 @@
 %define major 2
 %define libname %mklibname audio %{major}
 %define devname %mklibname audio -d
-%define statname %mklibname audio -s -d
 %define _disable_lto 1
 %global __requires_exclude ^perl\\(getopts.pl\\)
+%define daemon nasd
 
 Summary:	Network Audio System
 Name:		nas
@@ -15,6 +15,7 @@ URL:		http://radscan.com/nas.html
 Source0:	http://nas.codebrilliance.com/nas/%{name}-%{version}.src.tar.gz
 Source1:	nasd.service
 Source2:	nasd.sysconfig
+Patch0:		nas-1.9.3-Move-AuErrorDB-to-SHAREDIR.patch
 Patch1:		nas-1.9.2-asneeded.patch
 BuildRequires:	bison
 BuildRequires:	flex
@@ -62,76 +63,51 @@ Obsoletes:	%{_lib}nas-devel < 1.9.2-10
 %description -n	%{devname}
 This package allows you to develop your own network audio programs.
 
-%package -n	%{statname}
-Summary:	NAS static library
-Group:		Development/C
-Requires:	%{devname} = %{version}
-Provides:	%{name}-static-devel = %{version}-%{release}
-Obsoletes:	%{_lib}nas-static-devel < 1.9.2-10
-
-%description -n %{statname}
-NAS static library.
-
 %prep
 %setup -q
-%patch1 -p0
+%patch0 -p1 -b .move_AuErrorDB
+
+%before_configure
+# Update config.sub to support aarch64, bug #926196
+sed -i -e '/AC_FUNC_SNPRINTF/d' config/configure.ac
+autoreconf -i -f config
 
 %build
-%before_configure
-for cfgdir in %{_libdir} %{_prefix}/lib %{_datadir}; do
-  if [[ -f "$cfgdir/X11/config/Imake.tmpl" ]]; then
-    CONFIGDIR="$cfgdir/X11/config"
-    break
-  fi
-done
-if [[ -z "$CONFIGDIR" ]]; then
-  echo "Error: Imake.tmpl not found, the package won't build."
-  exit 1
-fi
-make Makefiles CONFIGDIR=$CONFIGDIR
-%make World CONFIGDIR=$CONFIGDIR \
-    WORLDOPTS="-k CDEBUGFLAGS='%{optflags} -D__USE_BSD_SIGNAL' " \
-    CXXDEBUGFLAGS="%{optflags} -w" EXTRA_LDOPTIONS="%ldflags" CC="%{__cc} %ldflags"
+xmkmf
+# See HISTORY file how to modify CDEBUGFLAGS
+make WORLDOPTS='-k CDEBUGFLAGS="%{optflags}" -k EXTRA_LDOPTIONS="%{ldflags}"' %{?_smp_mflags} World
 
-for i in $(find . -name Makefile);do sed -i 's|gcc|%{__cc}|g' $i;done
-%ifarch aarch64
-for i in $(find . -name Makefile);do sed -i 's|DefaultGcc2AArch64Opt||g' $i;done
-%endif
 
 %install
-%makeinstall_std \
-   BINDIR="%{_bindir}" \
-   LIBDIR="%{_libdir}/X11" \
-   INCROOT="%{_includedir}" \
-   USRLIBDIR="%{_libdir}" \
-   SHLIBDIR="%{_libdir}" \
-   MANPATH="%{_mandir}" \
-   DOCDIR="%{_datadir}/X11/doc" \
-   install.man
+make DESTDIR=$RPM_BUILD_ROOT BINDIR=%{_bindir} INCROOT=%{_includedir} \
+  LIBDIR=%{_libdir}/X11  SHLIBDIR=%{_libdir} USRLIBDIR=%{_libdir} \
+  MANPATH=%{_mandir} INSTALLFLAGS='-p' EXTRA_LDOPTIONS='%{ldflags}' \
+  install install.man
 
-mv %{buildroot}%{_sysconfdir}/nas/nasd.conf{.eg,}
-install -d %{buildroot}%{_localstatedir}/lib/nasd
-install -m755 %{SOURCE2} -D %{buildroot}%{_sysconfdir}/sysconfig/nasd
-install -p -m644 -D %{SOURCE1} %{buildroot}%{_unitdir}/nasd.service
+install -p -m644 -D %{SOURCE1} $RPM_BUILD_ROOT%{_unitdir}/%{daemon}.service
+install -p -m644 -D %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{daemon}
+
+# Rename config file
+mv $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/nasd.conf{.eg,}
+
+## unpackaged files
+# Remove static libraries
+rm -fv $RPM_BUILD_ROOT%{_libdir}/lib*.a
+mkdir -p %{buildroot}%{_localstatedir}/lib/nasd
+
+
+%post
+%systemd_post %{daemon}.service
+
+%preun
+%systemd_preun %{daemon}.service
+
+%postun
+%systemd_postun_with_restart %{daemon}.service
 
 %pre
 %_pre_useradd nasd %{_localstatedir}/lib/nasd /bin/true
 usermod -G audio nasd
-
-%post
-%_post_service nasd
-
-%triggerpostun -- nas <= 1.9-1
-#(peroyvind): be sure to remove old socket belonging to root and restart nasd
-#             now that it runs under own user
-rm -f /tmp/.sockets/audio*
-service nasd condrestart
-
-%preun
-%_preun_service nasd
-
-%postun
-%_postun_userdel nasd
 
 %files
 %doc FAQ HISTORY README RELEASE TODO
@@ -145,12 +121,9 @@ service nasd condrestart
 
 %files -n %{libname}
 %{_libdir}/libaudio.so.%{major}*
-%{_libdir}/X11/AuErrorDB
+%{_datadir}/X11/AuErrorDB
 
 %files -n %{devname}
 %{_libdir}/lib*.so
 %{_includedir}/audio
 %{_mandir}/man3/*
-
-%files -n %{statname}
-%{_libdir}/lib*.a
