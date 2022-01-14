@@ -4,6 +4,7 @@
 %define _disable_lto 1
 %global __requires_exclude ^perl\\(getopts.pl\\)
 %define daemon nasd
+%global optflags %{optflags} -fcommon
 
 Summary:	Network Audio System
 Name:		nas
