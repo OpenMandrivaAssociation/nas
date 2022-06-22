@@ -9,7 +9,7 @@
 Summary:	Network Audio System
 Name:		nas
 Version:	1.9.4
-Release:	10
+Release:	11
 License:	Public Domain
 Group:		System/Servers
 URL:		http://radscan.com/nas.html
