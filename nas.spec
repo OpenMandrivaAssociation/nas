@@ -12,7 +12,7 @@ Version:	1.9.4
 Release:	12
 License:	Public Domain
 Group:		System/Servers
-URL:		http://radscan.com/nas.html
+URL:		https://radscan.com/nas.html
 Source0:	http://nas.codebrilliance.com/nas/%{name}-%{version}.src.tar.gz
 Source1:	nasd.service
 Source2:	nasd.sysconfig
